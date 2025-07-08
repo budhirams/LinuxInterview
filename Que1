@@ -1,0 +1,43 @@
+Difference between ./scriptName & bash scriptName
+-------------------------------------------------
+
+[root@worker ~]# vim firstScript.sh
+[root@worker ~]# chmod u+x firstScript.sh                 # Give the user execute mermission
+
+[root@worker ~]# vim firstScript.sh
+#!/bin/bash
+java --version
+[root@worker ~]# ./firstScript.sh
+openjdk 17.0.14 2025-01-21 LTS
+OpenJDK Runtime Environment (Red_Hat-17.0.14.0.7-1) (build 17.0.14+7-LTS)
+OpenJDK 64-Bit Server VM (Red_Hat-17.0.14.0.7-1) (build 17.0.14+7-LTS, mixed mode, sharing)
+
+Note: it has also shebang-line and execute permission
+you can also run your script using complete path
+
+[root@worker ~]# /root/firstScript.sh
+openjdk 17.0.14 2025-01-21 LTS
+OpenJDK Runtime Environment (Red_Hat-17.0.14.0.7-1) (build 17.0.14+7-LTS)
+OpenJDK 64-Bit Server VM (Red_Hat-17.0.14.0.7-1) (build 17.0.14+7-LTS, mixed mode, sharing)
+
+[root@worker ~]# vim second.sh
+java --version
+Note: it has not shebang-line and also not given user execute permission
+
+[root@worker ~]# echo $SHELL
+/bin/bash
+[root@worker ~]# bash second.sh
+openjdk 17.0.14 2025-01-21 LTS
+OpenJDK Runtime Environment (Red_Hat-17.0.14.0.7-1) (build 17.0.14+7-LTS)
+OpenJDK 64-Bit Server VM (Red_Hat-17.0.14.0.7-1) (build 17.0.14+7-LTS, mixed mode, sharing)
+
+[root@worker ~]# ./second.sh
+-bash: ./second.sh: Permission denied
+
+See , now the only difference between thease two is 
+here in first mechanism , you are having execution permissions and also inside the script, the very first line is shebang line 
+  but in second script  here no need to execution permissions and also no need to mention sebang line in your script as at very first line
+
+Note:
+But the best way is just mention your shebang line as a very first line in your shell script and then provide execution permission for your script and then run your script using ./ or 
+by using path this is the best way
