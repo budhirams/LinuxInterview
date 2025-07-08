@@ -1,0 +1,22 @@
+[root@worker ~]# cat new.sh
+#!/usr/bin/bash
+a=5
+echo ${a}
+
+a=10
+
+echo ${a}
+
+
+[root@worker ~]# ./new.sh
+5
+10
+
+
+re-assign ,It is possible and it is acceptable in your shell scripting
+
+
+------------------------------------------------------------------------------------------------------------------------------------
+unset is used to delete your define value
+
+
