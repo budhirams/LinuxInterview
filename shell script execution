@@ -1,0 +1,26 @@
+shell is going to execute line by line
+
+for example
+[root@worker ~]# cat new.sh
+#!/usr/bin/bash
+
+y=$((m*x+c))
+m=2
+x=3
+c=4
+echo $y
+[root@worker ~]# #suppose I have change the value in previous one
+[root@worker ~]# vim new.sh
+[root@worker ~]# ./new.sh
+10
+[root@worker ~]# cat new.sh
+#!/usr/bin/bash
+m=2
+x=3
+c=4
+
+y=$((m*x+c))
+echo $y
+
+
+so from above example it is working line by line
