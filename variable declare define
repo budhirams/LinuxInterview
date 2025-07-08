@@ -1,0 +1,50 @@
+variable plays an important role in any programming or scripting language
+variable are used to store data/value
+
+how to store a command in a variable
+g=$(hostname)
+
+or
+
+h=`hostname`
+-------------------------------------------------------------------------
+
+
+#!/usr/bin/bash
+a=3
+b=5.6
+c=r
+d=bash
+e=/home/VRTech
+f=$(hostname)
+# --- OR ---another way for command to define a variable
+g=`hostname`
+
+
+# You can display your variable value using echo or cat command
+
+echo $e
+
+echo ${e}
+
+cat << EOF
+${e}
+EOF
+
+- OUTPUT -
+[root@worker ~]# ./new.sh
+/home/VRTech
+/home/VRTech
+/home/VRTech
+
+
+
+------ How to assign a variable as a variabl
+  x=$d
+  echo $x
+  
+
+  now the bash will be assign to x 
+
+------ best practice is 
+    x=${d}
