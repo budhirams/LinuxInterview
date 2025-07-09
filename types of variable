@@ -1,0 +1,44 @@
+set   --------- find out system define variable of default variable
+[root@worker ~]# echo ${HOSTNAME}
+worker
+
+
+------------------------ RULES TO DEFINE VARIABLES -------------------------
+#!/usr/bin/bash
+myname=budhiram
+myName=budhiram
+my_name=budhiram
+myName1=budhiram
+
+Note: there should not be any space while defining a variable
+means below is wrong 
+a1= 6
+a3 =8
+correct is 
+
+a1=6
+a3=8
+
+NOTE: use quote for the data if data consist of spaces
+myNameValue="shell scripting"
+
+
+NOTE: you can store the output of a command into a variable
+  anyVariable=$(command)
+  anyVariable=`command`
+
+NOTE: you can assign one variable value/data into another using:
+  Name="shell scripting"
+  NewName=${Name}
+
+NOTE: Better to avoid CAPITAL Letters for variables as system variables are in CAPITALS , if you want to use check once before creating it.
+   suppose you are defining variable in CAPITAL letter
+   MYNAME=
+   USER
+   Firstly check 
+   # echo ${MYNAME}
+    no output means you can define
+
+   # echo ${USER
+     root
+   means getting some output so you can not define in CAPITAL letter variable  USER 
