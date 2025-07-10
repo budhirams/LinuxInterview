@@ -1,0 +1,49 @@
+export Command to Provide Input for Variables
+-------------------------------------------------
+
+Syntax: export VarName=VarValue
+NOTE: Variables will get vanish(disappear suddenly) once you close the terminal
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ export CMTool=ansible
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ vim withExport.sh
+#!/usr/bin/bash
+echo ${CMTool}
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ ./withExport.sh
+-bash: ./withExport.sh: Permission denied
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ chmod u+x withExport.sh
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ ./withExport.sh
+ansible
+
+# suppose I am going to exit
+I want to run again the command , it will not work
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ ./withExport.sh
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$
+
+NOTE: all exported value you can find using 
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$  export -p
+
+For example:
+-----------
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ export CMDTool=Ansible
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ export -p | grep CMDTool
+declare -x CMDTool="Ansible"
+
+NOTE: And also this exported variable is available in environment variables as well.
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ set | grep CMD
+BASH_CMDS=()
+CMDTool=Ansible
+_=CMDTool=Ansible
+
+
+
+
+
+
+
