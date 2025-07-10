@@ -1,0 +1,87 @@
+Redirection Operators & File Descriptors for STDIN , STDOUT and STDERR
+-----------------------------------------------------------------------
+
+
+Redirection Operators:
+---------------------
+
+- How we can provide input for command if required ?
+- How we store output/error into a file?
+- How to pass one command output as an input to another command ?
+  Solutions is: using redirection operators
+   
+- We have different types of redirection operators , based on input/output redirection
+- They are:
+  - Input Redirection (< & <<<)        [< for files      <<< for string/text]
+  - Output Redirection (> & >>)        [ > to create a file      >> to append a data to a file ]
+  - Combining Redirection ( | )        [ By Default it consider only success output from first command and pass as an input to second command
+
+----------------------------------------------------------------------------------------------------------------
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ cat /etc/passwd | grep bis
+bis:x:1000:1000:bis:/home/bis:/bin/bash
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ cut -d ':' -f1 <<< "bis:x:1000:1000:bis:/home/bis:/bin/bash"
+bis
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ cut -d ':' -f1 <<< $(cat /etc/passwd | grep bis)
+bis
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ cat <  /etc/passwd          /etc/passwd is providing as an input for cat
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+
+
+
+bis@bis-VMware-Virtual-Platform:~$ docker --version > devToolInfo.txt
+bis@bis-VMware-Virtual-Platform:~$ cat devToolInfo.txt
+Docker version 28.2.2, build e6534b4
+
+NOTE : > (greter than sign overrite the content )
+
+
+
+
+-------------------------------------------------------------------------------------------------------
+File Descriptors for STDIN , STDOUT , STDERR
+_________________________________________________________________
+
+- A File Descriptor is an integer number to identify STDIN  STDOUT & STDERR
+  - 0 : STDIN ( 0 > )
+  - 1 : STDOUT ( > OR 1 )
+  - 2 : STDERR ( 2 > )
+
+bis@bis-VMware-Virtual-Platform:~$ cat /etc/securitty/  1>ss.log 2>er.log
+bis@bis-VMware-Virtual-Platform:~$ cat ss.log
+bis@bis-VMware-Virtual-Platform:~$ cat er.log
+cat: /etc/securitty/: No such file or directory
+
+bis@bis-VMware-Virtual-Platform:~$ ls -lrth | head    1>lsout.log   2>lser.log
+bis@bis-VMware-Virtual-Platform:~$ cat lsout.log
+total 107M
+-rw-rw-r-- 1 bis bis 107M Oct 12  2024 mongodb-compass_1.44.5_amd64.deb
+drwxr-xr-x 2 bis bis 4.0K Nov  5  2024 Downloads
+drwxr-xr-x 2 bis bis 4.0K Nov  5  2024 Desktop
+drwxr-xr-x 2 bis bis 4.0K Nov  5  2024 Videos
+drwxr-xr-x 2 bis bis 4.0K Nov  5  2024 Templates
+drwxr-xr-x 2 bis bis 4.0K Nov  5  2024 Public
+drwxr-xr-x 2 bis bis 4.0K Nov  5  2024 Pictures
+drwxr-xr-x 2 bis bis 4.0K Nov  5  2024 Music
+drwxr-xr-x 2 bis bis 4.0K Nov  5  2024 Documents
+bis@bis-VMware-Virtual-Platform:~$ cat lser.log
+
+
+ls -lrth /home/bis 1   2           first write like that   how to write I am just learning without any confusion
+ls -lrth /home/bis 1>so.log   2>er.log 
+we can store both output in same file
+ls -lrth /home/bis 1>so.log 2>so.log
+How to combine both
+ls -lrth /home/bis 1>so.log 2>&1     STDER AND STDOUT
+
+Suppose I dont want to store any output
+ls -lrth /asfjfkkfllv 1>so.log 2>/dev/null
+
