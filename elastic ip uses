@@ -1,0 +1,2 @@
+elastic ip jenkins me kyu leten hai , jab jenkins ko github se sath integrate krna hota hai , kyoki yadi hum koi normal ec2 instance create karenge toh baar-2 problem hoga , kyoki uska ip change 
+  hota rahega , git hub ke sath problem ho jayaga 
