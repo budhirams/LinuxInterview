@@ -1,0 +1,36 @@
+[root@ip-172-31-81-41 ~]# cat demoData.txt
+nginx:x:992:992:Nginx web server:/var/lib/nginx:/sbin/nologin
+[root@ip-172-31-81-41 ~]# cut -f1 demoData.txt
+nginx:x:992:992:Nginx web server:/var/lib/nginx:/sbin/nologin
+NOTE: - because by default cut will assume that separator is tab , but there is not separator as tab between your column of fields
+      - Thats why you have to mention that with -d option
+
+[root@ip-172-31-81-41 ~]# cut -d ':' -f1 demoData.txt
+nginx
+
+Need first field and third field--
+[root@ip-172-31-81-41 ~]# cut -d ':' -f1,3 demoData.txt
+nginx:992
+
+
+NOTE: Suppose I want to give a space between them use --output-delimiter=' '
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ cut -d ':' --output-delimiter=' ' -f1,3 demoData.txt
+bis 1000
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ cut -d ':'  -f1-4 demoData.txt
+bis:x:1000:1000
+
+Note: Print 2 to end
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ cut -d ':'  -f2- demoData.txt
+x:1000:1000:bis:/home/bis:/bin/bash
+
+Note : Starting to 4
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ cut -d ':'  -f-4 demoData.txt
+bis:x:1000:1000
+
+bis@bis-VMware-Virtual-Platform:~/shellScripting$ cut -d ',' -f1 <<<"hi,how,are,you"
+hi
+
+
+
+
