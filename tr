@@ -1,0 +1,37 @@
+tr (translate) command
+-------------------------------------------
+tr command is useful to translate or delete the characters then writes the output on stdout.
+
+bis@kali:~$ echo "hello , how are you" | tr '[a-z]' [A-Z]
+HELLO , HOW ARE YOU
+bis@kali:~$ echo "hello , how are you" | tr '[a-z]' '[A-Z]'
+HELLO , HOW ARE YOU
+bis@kali:~$ echo "hi this is {java}" | tr '{}' '()'
+hi this is (java)
+bis@kali:~$ java --version 2>&1
+openjdk 21.0.5 2024-10-15
+OpenJDK Runtime Environment (build 21.0.5+11-Ubuntu-1ubuntu124.04)
+OpenJDK 64-Bit Server VM (build 21.0.5+11-Ubuntu-1ubuntu124.04, mixed mode, sharing)
+
+bis@kali:~$ java --version 2>&1 | head -1
+openjdk 21.0.5 2024-10-15
+bis@kali:~$ java -version 2>&1 | head -1
+openjdk version "21.0.5" 2024-10-15
+bis@kali:~$ java -version 2>&1 | head -1 | tr -d ' ' -f3
+
+bis@kali:~$ java -version 2>&1 | head -1 | cut -d ' ' -f3
+"21.0.5"
+bis@kali:~$ java -version 2>&1 | head -1 | cut -d ' ' -f3 | tr -d '"'
+21.0.5
+
+
+
+tr '\n' ' '                    new line into space
+
+
+bis@kali:~$ ps -ef | tail | awk '{print $2}' | tr '\n' ' '
+5360 5363 5372 5470 5493 5598 5630 5631 5632 5633 bis@kali:~$
+
+how to kill all pid 
+bis@kali:~$ kill -9 $(ps -ef | tail | awk '{print $2}' | tr '\n' ' ')
+
