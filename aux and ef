@@ -1,0 +1,68 @@
+NOTE: aux %cpu and %mem , also showing
+
+root@ubuntu:~# ps aux | head
+USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root           1  0.2  0.2  23424 14364 ?        Ss   15:35   0:05 /sbin/init splash
+root           2  0.0  0.0      0     0 ?        S    15:35   0:00 [kthreadd]
+root           3  0.0  0.0      0     0 ?        S    15:35   0:00 [pool_workqueue_release]
+root           4  0.0  0.0      0     0 ?        I<   15:35   0:00 [kworker/R-rcu_gp]
+root           5  0.0  0.0      0     0 ?        I<   15:35   0:00 [kworker/R-sync_wq]
+root           6  0.0  0.0      0     0 ?        I<   15:35   0:00 [kworker/R-slub_flushwq]
+root           7  0.0  0.0      0     0 ?        I<   15:35   0:00 [kworker/R-netns]
+root          10  0.0  0.0      0     0 ?        I<   15:35   0:00 [kworker/0:0H-events_highpri]
+root          11  0.0  0.0      0     0 ?        I    15:35   0:00 [kworker/u512:0-ipv6_addrconf]
+root@ubuntu:~# ps -ef | head
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 15:35 ?        00:00:05 /sbin/init splash
+root           2       0  0 15:35 ?        00:00:00 [kthreadd]
+root           3       2  0 15:35 ?        00:00:00 [pool_workqueue_release]
+root           4       2  0 15:35 ?        00:00:00 [kworker/R-rcu_gp]
+root           5       2  0 15:35 ?        00:00:00 [kworker/R-sync_wq]
+root           6       2  0 15:35 ?        00:00:00 [kworker/R-slub_flushwq]
+root           7       2  0 15:35 ?        00:00:00 [kworker/R-netns]
+root          10       2  0 15:35 ?        00:00:00 [kworker/0:0H-events_highpri]
+root          11       2  0 15:35 ?        00:00:00 [kworker/u512:0-ipv6_addrconf]
+
+
+root@ubuntu:~# ps aux | grep java
+root        6399  0.0  0.0   9144  2248 pts/2    S+   16:24   0:00 grep --color=auto java   
+It is not a java process , it will show you when you run above command 
+
+see now not getting any output , because we have excluded grep 
+root@ubuntu:~# ps aux | grep java | grep -v grep
+root@ubuntu:~#
+
+how to temporely stop process
+root@ubuntu:~# kill -STOP 6604
+root@ubuntu:~# ps aux | tail
+root        6595  0.0  0.0      0     0 ?        I<   17:31   0:00 [kworker/u521:3-ttm]
+root        6596  0.0  0.0      0     0 ?        I<   17:31   0:00 [kworker/u521:4-ttm]
+root        6597  0.0  0.0      0     0 ?        I<   17:31   0:00 [kworker/u521:5-ttm]
+root        6598  0.0  0.0      0     0 ?        I<   17:31   0:00 [kworker/u521:6-ttm]
+root        6599  0.0  0.0      0     0 ?        I<   17:31   0:00 [kworker/u521:7-ttm]
+root        6600  0.0  0.0      0     0 ?        I<   17:31   0:00 [kworker/u521:9]
+root        6601  0.0  0.0      0     0 ?        I    17:32   0:00 [kworker/u516:1-events_freezable_pwr_efficient]
+root        6604  0.0  0.0      0     0 ?        I    17:32   0:00 [kworker/0:2-events]
+But you can still found the process
+
+
+How to resume 
+root@ubuntu:~# kill -CONT 6604                  CONTINUE
+root@ubuntu:~# ps aux | tail
+
+root        6604  0.0  0.0      0     0 ?        I    17:32   0:00 [kworker/0:2-events]
+root        6617  0.0  0.0      0     0 ?        I    17:36   0:00 [kworker/u513:1-events_freezable_pwr_efficient]
+root        6619  0.0  0.0  13748  4628 pts/2    R+   17:36   0:00 ps aux
+root        6620  0.0  0.0   8320  1836 pts/2    S+   17:36   0:00 tail
+
+how to set priority
+renice -n 10 -p pid
+
+this is -n 
+-19 -----------------------------------------  20
+more cpu priority                            less number of priority
+
+
+
+
+
