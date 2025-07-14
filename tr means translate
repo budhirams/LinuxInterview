@@ -1,0 +1,61 @@
+Note: This operator is useful to pass output of one command as input to next command 
+
+      By Default , only success output from first command will be pass as input to second command 
+   
+      If you want to pass error also to second command then:
+               Command1 2>&1 | command2
+
+
+
+
+bis@kali:~$ ansible --version
+ansible [core 2.18.6]
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = ['/home/bis/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3/dist-packages/ansible
+  ansible collection location = /home/bis/.ansible/collections:/usr/share/ansible/collections
+  executable location = /usr/bin/ansible
+  python version = 3.12.3 (main, Nov  6 2024, 18:32:19) [GCC 13.2.0] (/usr/bin/python3)
+  jinja version = 3.1.2
+  libyaml = True
+bis@kali:~$ ansible --version | awk 'NR==1'
+ansible [core 2.18.6]
+bis@kali:~$
+
+
+
+bis@kali:~$ java  -version
+openjdk version "21.0.5" 2024-10-15
+OpenJDK Runtime Environment (build 21.0.5+11-Ubuntu-1ubuntu124.04)
+OpenJDK 64-Bit Server VM (build 21.0.5+11-Ubuntu-1ubuntu124.04, mixed mode, sharing)
+
+bis@kali:~$ java  -version | awk 'NR==1'
+openjdk version "21.0.5" 2024-10-15
+OpenJDK Runtime Environment (build 21.0.5+11-Ubuntu-1ubuntu124.04)
+OpenJDK 64-Bit Server VM (build 21.0.5+11-Ubuntu-1ubuntu124.04, mixed mode, sharing)
+
+
+java  -version | awk 'NR==1'
+why above command is not worked means awk 
+explain : java -version command is giving your required output in the error place, not in the success place.
+And we know that by default only success output from the first command will be passed as input to the second command by using | (pipe)
+operator
+
+Then how you can handle it
+For that only we are handling using 2>&1
+
+means error output redirect into standard output and then we are passing that as input for our command.
+
+bis@kali:~$ java  -version 2>&1 | awk 'NR==1'
+openjdk version "21.0.5" 2024-10-15                           ----------------- pahle work nhi kiya tha
+
+How to get 3rd field 
+bis@kali:~$ java  -version 2>&1 | awk 'NR==1' | cut -d ' ' -f3
+"21.0.5"
+
+bis@kali:~$ java  -version 2>&1 | awk 'NR==1' | cut -d ' ' -f3 | tr -d '"'
+21.0.5
+
+
+
+
