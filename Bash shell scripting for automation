@@ -1,0 +1,81 @@
+[[ -f file ]]  ---> To validate file or path is a file or not
+
+[[ -d file ]]  ---> To validate file or path is a directory or not
+
+[[ -e file ]]  ---> To validate file exist or not
+
+[[ -s file ]]  ---> To validate file size is greater than zero or not
+
+[[ -r file ]]  ---> To validate file is having read permission  for the current user
+
+[[ -w file ]]  ---> To validate file is having write permission  for the current user
+
+[[ -x file ]]  ---> To validate file is having execution permission  for the current user
+
+
+
+
+bis@kali:~/shellScripting$ cat practice1.sh
+#!/usr/bin/bash
+
+[[ -r /etc/host ]] && cat /etc/host || echo "You Dont have read permission"
+
+bis@kali:~/shellScripting$ ./practice1.sh
+kali
+
+
+
+#!/usr/bin/bash
+fileName=/etc/host
+
+[[ -r ${fileName} ]] && cat ${fileName} || echo "You Dont have read permission"
+
+
+
+
+#!/usr/bin/bash
+fileName=/etc/host
+
+[[ -r ${fileName} ]] && cat ${fileName} || echo "You Dont have read permission"
+bis@kali:~/shellScripting$ ./practice1.sh 
+kali
+
+
+
+I want to store this value in ${1}
+
+#!/usr/bin/bash
+fileName=${1}
+
+[[ -r ${fileName} ]] && cat ${fileName} || echo "You Dont have read permission"
+
+bis@kali:~/shellScripting$ ./practice1.sh  /etc/host
+kali
+bis@kali:~/shellScripting$ ./practice1.sh  /etc/shadow
+You Dont have read permission
+
+
+
+
+
+bis@kali:~/shellScripting$ ./practice1.sh  /etc/shhhhhhh
+You Dont have read permission
+This is not correct logic , first check it is exit or not
+
+{ echo "Given file is not exit";exit; }           ek block bana denge
+
+
+#!/usr/bin/bash
+fileName=${1}
+[[ -e ${fileName} ]] || { echo "Given file is not exit";exit; }
+
+[[ -r ${fileName} ]] && cat ${fileName} || echo "You Dont have read permission"
+
+
+bis@kali:~/shellScripting$ ./practice1.sh  /etc/shhhhhhh
+Given file is not exit
+bis@kali:~/shellScripting$ ./practice1.sh  /etc/shadow
+You Dont have read permission
+ 
+
+
