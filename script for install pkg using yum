@@ -1,0 +1,214 @@
+🛠 Shell Script: Check if a Package is Installed
+
+This script checks if a given package/command is already installed using `command -v`. 
+If the package is not found, it installs the package using `yum`.
+
+---
+
+🔤 Explanation
+
+pkgName=${1}
+
+- `${1}` refers to the **first command-line argument** passed to the script.
+- `pkgName=${1}` assigns this argument to the variable `pkgName`.
+
+---
+
+✅ Example Script
+
+#!/usr/bin/bash
+pkgName=${1}
+# command -v $pkgName && echo "${pkgName} is already installed " || yum install ${pkgName} -y 
+if [[ command -v $pkgName ]]; then
+  echo "${pkgName} is already installed"
+fi
+
+---
+
+🧪 Practice Output
+
+bis@kali:~/shellScripting$ ./practice1.sh docker
+/usr/bin/docker
+docker is already installed
+
+---
+
+❌ Problem
+
+The command `command -v $pkgName` prints the path to the command, e.g., `/usr/bin/docker`.  
+But we only want to show the message and suppress that output.
+
+---
+
+✅ Final Script (With Output Suppression)
+
+#!/usr/bin/bash
+pkgName=${1}
+command -v $pkgName 1>/dev/null 2>&1 && echo "${pkgName} is already installed " || yum install ${pkgName} -y 
+
+---
+
+🧪 Practice Output
+
+bis@kali:~/shellScripting$ ./practice1.sh docker
+docker is already installed
+
+---
+
+🔁 Explanation of Redirection
+
+- `1>/dev/null` → Redirects standard output to `/dev/null` (i.e., discards it).
+- `2>&1` → Redirects standard error to wherever standard output is going (also to `/dev/null` in this case).
+
+
+
+
+
+
+
+
+
+
+
+
+if cmd1 ; then
+  cmd2
+else
+  cmd3
+fi
+
+
+
+add this 
+#!/usr/bin/bash
+pkgName=${1}
+command -v $pkgName 1>/dev/null 2>&1  && echo "${pkgName} is already installed " || yum install ${pkgName} -y 
+
+if command -v $pkgName 1>/dev/null 2>&1 ; then
+    echo "${pkgName} is already installed "
+else
+    yum install ${pkgName} -y 
+fi
+
+
+ 
+
+bis@kali:~/shellScripting$ ./practice1.sh  httpd
+./practice1.sh: line 9: yum: command not found
+
+
+
+
+
+#!/usr/bin/bash
+pkgName=${1}
+userId=$(id -u)
+if [[ ${userId} -ne 0 ]] ; then
+echo "you are not root user, Run using root user"
+exit 
+fi
+#command -v $pkgName 1>/dev/null 2>&1  && echo "${pkgName} is already installed " || yum install ${pkgName} -y 
+
+if command -v $pkgName 1>/dev/null 2>&1 ; then
+    echo "${pkgName} is already installed "
+else
+    yum install ${pkgName} -y 
+fi
+
+bis@kali:~/shellScripting$ ./practice1.sh  httpd
+you are not root user, Run using root user
+bis@kali:~/shellScripting$ echo $?
+0                                       ---------------- 0 toh nhi ana chahiye chnage code exit 1
+
+
+
+
+#!/usr/bin/bash
+pkgName=${1}
+userId=$(id -u)
+if [[ ${userId} -ne 0 ]] ; then
+echo "you are not root user, Run using root user"
+exit 1
+fi
+#command -v $pkgName 1>/dev/null 2>&1  && echo "${pkgName} is already installed " || yum install ${pkgName} -y 
+
+if command -v $pkgName 1>/dev/null 2>&1 ; then
+    echo "${pkgName} is already installed "
+else
+    yum install ${pkgName} -y 
+fi
+
+
+bis@kali:~/shellScripting$ ./practice1.sh  httpd
+you are not root user, Run using root user
+bis@kali:~/shellScripting$ echo $?
+1
+
+
+
+
+
+
+#!/usr/bin/bash
+pkgName=${1}
+if [[ $# -ne 1 ]] ; then
+  echo "Please pass input as some package name"
+exit 1
+fi
+userId=$(id -u)
+if [[ ${userId} -ne 0 ]] ; then
+echo "you are not root user, Run using root user"
+exit 2
+fi
+#command -v $pkgName 1>/dev/null 2>&1  && echo "${pkgName} is already installed " || yum install ${pkgName} -y 
+
+if command -v $pkgName 1>/dev/null 2>&1 ; then
+    echo "${pkgName} is already installed "
+else
+    yum install ${pkgName} -y 
+fi
+
+   
+bis@kali:~/shellScripting$ ./practice1.sh  
+Please pass input as some package name
+
+
+
+
+
+#!/usr/bin/bash
+pkgName=${1}
+if [[ $# -ne 1 ]] ; then
+  echo "Please pass input as some package name"
+exit 1
+fi
+userId=$(id -u)
+if [[ ${userId} -ne 0 ]] ; then
+echo "you are not root user, Run using root user"
+exit 2
+fi
+#command -v $pkgName 1>/dev/null 2>&1  && echo "${pkgName} is already installed " || yum install ${pkgName} -y 
+
+if command -v $pkgName 1>/dev/null 2>&1 ; then
+    echo "${pkgName} is already installed "
+else
+    apt-get install ${pkgName} -y 
+    aptExitStatus=$?
+    if [[ ${aptExitStatus} -eq 0 ]] ; then 
+      echo "package is installed successfully"
+    else
+      echo "package failed to install"
+    fi
+fi
+
+
+Processing triggers for ufw (0.36.2-6) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.5) ...
+Package was installed successfully
+root@kali:/home/bis/shellScripting# ./practice1.sh apachee2
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+E: Unable to locate package apachee2
+Package failed to install
