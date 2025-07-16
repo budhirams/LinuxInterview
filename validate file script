@@ -1,0 +1,105 @@
+🛠 Shell Script: Validate File Input and Read Permission
+
+This script checks:
+- Whether exactly one argument (a file path) is provided
+- Whether the file exists
+- Whether the user has read permission to display its contents
+
+---
+
+✅ Script: practice1.sh
+
+#!/usr/bin/bash
+fileName=${1}
+echo "${#}"
+# [[ -e ${fileName} ]] || { echo "Given file does not exist"; exit; }
+
+# [[ -r ${fileName} ]] && cat ${fileName} || echo "You don't have read permission"
+
+---
+
+🧪 Practice Output
+
+bis@kali:~/shellScripting$ ./practice1.sh 
+0
+bis@kali:~/shellScripting$ ./practice1.sh /etc/passwd
+1
+bis@kali:~/shellScripting$ ./practice1.sh /etc/passwd /etc/shadow
+2
+
+echo "${#}" calculates how many arguments are passed.
+Your shell script should always expect exactly one argument.
+So, if this value is 1, execute the script.
+If not, exit the script.
+
+How can you do that?
+
+---
+
+🧮 Comparison Operators in Shell
+
+[[ num1 -eq num2 ]]    # Checks if two numbers are equal
+[[ num1 -ne num2 ]]    # Checks if two numbers are not equal
+[[ num1 -lt num2 ]]    # Checks if num1 is less than num2
+
+---
+
+✅ Final Script with Condition
+
+#!/usr/bin/bash
+fileName=${1}
+[[ ${#} -eq 1 ]] || { echo "You must provide exactly one input file"; exit; }   # Note: space after '{' is required
+[[ -e ${fileName} ]] || { echo "Given file does not exist"; exit; }
+[[ -r ${fileName} ]] && cat ${fileName} || echo "You don't have read permission"
+
+---
+
+🧪 Practice Output (Validations)
+
+bis@kali:~/shellScripting$ ./practice1.sh /etc/shadow
+You don't have read permission
+
+bis@kali:~/shellScripting$ ./practice1.sh /etc/host
+kali
+
+bis@kali:~/shellScripting$ ./practice1.sh /etc/host /etc/shaaa
+You must provide exactly one input file
+
+bis@kali:~/shellScripting$ ./practice1.sh /etc/host /etc/shadow /etc/passwd
+You must provide exactly one input file
+
+---
+
+💡 Notes
+
+- ${#} = Number of arguments passed
+- ${1} = First argument (expected to be the file)
+- { ... } block requires spaces: write { command; } instead of {command;}
+- && executes the next command only if the previous one succeeds
+- || executes the next command only if the previous one fails
+
+
+🔁 Another Way (Full Version Using if-else Statements)
+
+#!/usr/bin/bash
+fileName=${1}
+
+if ! [[ ${#} -eq 1 ]]; then
+  echo "You have provide input as a file"
+  exit
+fi
+
+if ! [[ -e ${fileName} ]]; then
+  echo "Given file is not exit"
+  exit
+fi
+
+if [[ -r ${fileName} ]]; then                    ----------- means you have read permission
+  cat ${fileName}
+else
+  echo "You Dont have read permission"
+fi
+
+# [[ ${#} -eq 1 ]] || { echo "You have provide input as a file" ; exit; }
+# [[ -e ${fileName} ]] || { echo "Given file is not exit";exit; }
+# [[ -r ${fileName} ]] && cat ${fileName} || echo "You Dont have read permission"
