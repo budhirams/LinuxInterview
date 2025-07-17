@@ -21,6 +21,8 @@ pkgName=${1}
 # command -v $pkgName && echo "${pkgName} is already installed " || yum install ${pkgName} -y 
 if [[ command -v $pkgName ]]; then
   echo "${pkgName} is already installed"
+else
+  yum install ${pkgNane} -y
 fi
 
 ---
