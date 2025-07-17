@@ -254,3 +254,12 @@ bis@kali:~/shellScripting$ sed -i '/root/d' newfile.txt                     sear
 bis@kali:~/shellScripting$ head -2 newfile.txt
 daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
 bin:x:2:2:bin:/bin:/usr/sbin/nologin
+
+
+
+s1mahdc01:bis> head -2 /tmp/delete3-times.txt
+delete case maj:
+delete case civil-nohit-skip-reverse [[elementId:-1
+
+s1mahdc01:bis> sed -i '1,2d' /tmp/delete3-times.txt
+
