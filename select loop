@@ -1,0 +1,146 @@
+Select loop and its uses:
+-----------------------------------------------------
+select option in docker nginx ansible
+do
+  echo ${option}
+done
+
+
+bis@LAPTOP-MAV6U7B1:~/while loop$ ./whil2.sh 
+1) docker
+2) nginx
+3) ansible
+#? 1
+docker
+#? 2
+nginx
+#? 1
+docker
+#?                  it is waiting for option (#?)
+
+
+
+in place of waiting for option you can give any message
+PS3="select your service to know the status:"
+
+
+
+🧠 What is PS3?
+PS3 is a special built-in prompt variable in Bash, used only with the select command.
+
+It sets the message that is shown when prompting the user for input.
+
+📌 Default:
+#?
+
+
+✅ Custom:
+PS3="Choose an option: "
+
+
+🧾 Why is PS3 Needed?
+The select loop in Bash is used to create a simple menu from an array of choices.
+
+Example:
+
+
+❓ Can I Replace PS3 with Something Else?
+❌ No — You cannot use another variable name to customize the select prompt.
+Only PS3 is recognized by Bash for this specific purpose.
+
+
+
+🧠 Summary
+
+Variable	Purpose	                  Default	Customizable?
+PS1	        Main shell prompt ($)	   $	        ✅ Yes
+PS2	        Continuation prompt (>)    >	        ✅ Yes
+PS3	        select prompt          	  #?	        ✅ Yes (only for select)
+PS4      	Debug prompt (+)	   +	        ✅ Yes
+
+
+
+
+
+
+------------------------------------------ some exercise ------------------------------------------
+
+#!/bin/bash
+PS3="select your service to know the status:"
+select option in docker nginx ansible
+do
+  echo ${option}
+done
+
+bis@LAPTOP-MAV6U7B1:~/while loop$ ./whil2.sh 
+1) docker
+2) nginx
+3) ansible
+select your service to know the status:1        ----------- now you can get different message , inplace of default message #?
+docker
+select your service to know the status:
+
+
+
+
+most case we used this for case statement logic
+--------------------------------------------------
+
+
+#!/bin/bash
+PS3="select your service to know the status:"
+select option in docker nginx sshd
+do
+  case ${option} in 
+      docker) systemctl status docker
+              ;;
+      nginx)  systemctl status nginx --no-pager
+
+              ;;
+      sshd) systemctl status sshd.service
+              ;;
+      *) echo "If you are selection another value it will show you option is invalid"
+            ;;
+   esac  
+
+
+
+
+
+select your service to know the status:6
+If you are selection another value it will show you option is invalid
+select your service to know the status:
+
+ 
+
+
+NOTE: you have to write a logic to stop it
+--------------------------------------------------------------------------
+
+In option we have to chose stop optin
+
+#!/bin/bash
+PS3="select your service to know the status:"
+select option in docker nginx sshd stop
+do
+  case ${option} in 
+      docker) systemctl status docker
+              ;;
+      nginx)  systemctl status nginx --no-pager
+
+              ;;
+      sshd) systemctl status sshd.service
+              ;;
+      stop)  break
+              ;;
+      *) echo "If you are selection another value it will show you option is invalid"
+            ;;
+   esac   
+
+done
+
+
+
+
+select your service to know the status:4
+bis@LAPTOP-MAV6U7B1:~/while loop$ 
