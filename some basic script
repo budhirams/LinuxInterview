@@ -1,0 +1,130 @@
+Project-01
+--------------------------
+
+
+
+create a loop only on files contained in a folder
+-------------------------------------------------------
+
+#!/bin/bash
+
+for myfile in *;
+do 
+  if [ -f $myfile ] ; then       # if my file is regular file
+       echo $myfile
+       else 
+          echo "$myfile is NOT a file"
+          echo ""
+       fi
+done
+
+
+
+Find a specific word in all files
+-------------------------------------------------------
+
+#!/bin/bash
+
+for myfile in *;
+do 
+  if [ -f ${myfile} ] ; then       # if my file is regular file
+       echo ${myfile}
+       grep -n "prometheus" ${myfile}
+       else 
+          echo "${myfile} is NOT a file"
+          echo ""
+       fi
+done
+
+
+
+If found empty
+-------------------------------------------------------
+#!/bin/bash
+for myfile in *;
+do 
+  if [ -f $myfile ] ; then       # if my file is regular file
+       #echo ${myfile}
+       #grep -ni "prometheus" $myfile
+       check=$(grep -ni "LINE" $myfile)
+       if [ -z $check ] ;then               # if found empty
+               echo "EMPTY"
+           else
+               echo "FOUND"
+       fi
+
+       else 
+          echo "${myfile} is NOT a file"
+          echo ""
+       fi
+done
+
+
+
+
+
+-------------------------------------------------------
+
+
+#!/bin/bash
+
+mkdir -p ./hot-folder
+
+for myfile in *; do 
+  if [ -f "${myfile}" ]; then
+    check=$(grep -ni "LINE" "${myfile}")
+    
+    if [ -z "${check}" ]; then
+      echo "EMPTY"
+    else
+      echo "HOT FILE!! FOUND!"
+      cp "${myfile}" ./hot-folder
+      echo " " >> "hot-folder/${myfile}"
+      echo "*********" >> "hot-folder/${myfile}"
+    fi
+
+  else 
+    echo "${myfile} is NOT a file"
+    echo ""
+  fi
+done
+
+--------------------------------------- Run recursively through all folders -----------------------------------------------------
+means to check in directory and subdirectory
+
+
+#!/bin/bash
+f=$(find . -type d)
+for i in "${f}"
+do
+echo "found directory: ${i}"
+done
+
+
+
+--------------------------------------- Within each folder , run a for loop on each file --------------------------------------------------
+
+#!/bin/bash
+
+for i in $(find . -type d);
+do
+   echo "This is folder : $i"
+
+    for file in $i/* ;
+    do
+       echo "The file inside is : $file"
+       
+    done
+    echo "--------------------"
+    echo " "
+
+done
+
+
+
+
+
+
+
+
+
