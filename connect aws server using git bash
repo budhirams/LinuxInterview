@@ -1,0 +1,64 @@
+in git bash
+
+
+$ cat /c/Users/BUDHIRAM\ SAHANI/.ssh/config
+Host my-aws
+    HostName 3.80.204.176
+    User ec2-user
+    IdentityFile "/c/Users/BUDHIRAM SAHANI/Downloads/newkey.pem"
+
+Host ec2-34-228-160-121.compute-1.amazonaws.com
+  HostName ec2-34-228-160-121.compute-1.amazonaws.com
+  User ec2-user
+  IdentityFile "C:/Users/BUDHIRAM SAHANI/Downloads/ubuntu26.pem"
+
+# Local VM - 192.168.150.128
+Host local-vm
+  HostName 192.168.150.128
+  User bis
+
+# Backup VM reference (optional alias)
+Host backup-vm
+  HostName 192.168.175.253
+
+
+
+ssh my-aws
+
+
+$ pwd
+/c/Users/BUDHIRAM SAHANI/Downloads
+ssh -i newkey.pem ec2-user@3.80.204.176
+
+
+
+BUDHIRAM SAHANI@LAPTOP-MAV6U7B1 MINGW64 ~/Downloads
+$ ssh my-aws
+   ,     #_
+   ~\_  ####_        Amazon Linux 2023
+  ~~  \_#####\
+  ~~     \###|
+  ~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
+   ~~       V~' '->
+    ~~~         /
+      ~~._.   _/
+         _/ _/
+       _/m/'
+Last login: Sat Jul 26 07:26:03 2025 from 152.58.47.181
+[ec2-user@ip-172-31-25-7 ~]$ exit
+logout
+Connection to 3.80.204.176 closed.
+
+BUDHIRAM SAHANI@LAPTOP-MAV6U7B1 MINGW64 ~/Downloads
+$ ssh -i newkey.pem ec2-user@3.80.204.176
+   ,     #_
+   ~\_  ####_        Amazon Linux 2023
+  ~~  \_#####\
+  ~~     \###|
+  ~~       \#/ ___   https://aws.amazon.com/linux/amazon-linux-2023
+   ~~       V~' '->
+    ~~~         /
+      ~~._.   _/
+         _/ _/
+       _/m/'
+Last login: Sat Jul 26 07:32:01 2025 from 152.58.47.181
