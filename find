@@ -1,0 +1,8 @@
+Find and list the log files older than 500 days in /var/log folder
+--------------------------------------------------------------------------------------------------------------------------------------
+root@kali:~# find /var/ -type f -name *.log -mtime +500 -exec ls -lrth {} \;
+
+Find and delete files over 100MB.
+--------------------------------------------------------------------------------------------------------------------------------------
+root@kali:~# find /var/ -type f -size +200M -exec ls -ltr {} \;
+
