@@ -6,3 +6,38 @@ Find and delete files over 100MB.
 --------------------------------------------------------------------------------------------------------------------------------------
 root@kali:~# find /var/ -type f -size +200M -exec ls -ltr {} \;
 
+bis@kali:/tmp/parent$ find /tmp/ -maxdepth 2 -type d -exec basename {} \;
+
+bis@kali:/tmp/parent$ ls -ld /tmp/parent/*
+drwxrwxr-x 2 bis bis 4096 Jul 29 22:37 /tmp/parent/child
+NOTE: If I run     find /tmp/ -maxdepth 1 -type d -exec basename {} \;
+                   parent
+      If I run     find /tmp/ -maxdepth 2 -type d -exec basename {} \;
+                   parent
+                   child
+
+-maxdepth 1 — limit the depth of the search to 1 level only.
+-maxdepth 2	Goes one level deeper (subdirs inside subdirs)
+
+
+📁 Example Directory Structure:
+.
+├── dir1
+│   └── nested1
+├── dir2
+└── file.txt
+find . -maxdepth 1 -type d
+.
+./dir1
+./dir2
+
+find . -type d
+.
+./dir1
+./dir1/nested1
+./dir2
+
+
+basename /home/user/file.txt
+🟢 Output:
+file.txt
