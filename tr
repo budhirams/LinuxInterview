@@ -35,3 +35,16 @@ bis@kali:~$ ps -ef | tail | awk '{print $2}' | tr '\n' ' '
 how to kill all pid 
 bis@kali:~$ kill -9 $(ps -ef | tail | awk '{print $2}' | tr '\n' ' ')
 
+cat all-needto-exclude.txt
+'193800260001156',
+'19380004000691',
+'19380004000706',
+'19380004000719'
+
+bis@kali:~/shellScripting/casesAll$ tr -d "'," < all-needto-exclude.txt  > cleaned.txt
+
+cat cleaned.txt
+193800260001156
+19380004000691
+19380004000706
+19380004000719
