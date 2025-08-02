@@ -1,0 +1,282 @@
+Give permission to other user
+------------------------------------------
+
+root@kali:/tmp/india# ll
+total 12
+drwxr-xr-x  2 root root 4096 Aug  2 18:54 india/                 ------ owner and group-owner both are group
+
+root@kali:/tmp/india# # give list read permission
+root@kali:/tmp/india# 
+root@kali:/tmp/india# chmod o=r india/
+root@kali:/tmp/india# # andar jane ka permission
+root@kali:/tmp/india# chmod o=rx india/
+root@kali:/tmp/india# chmod o=--- india/            --------- no permission in other section
+
+
+
+root@kali:/tmp/india# ll
+total 12
+              owner  group-owner
+drwxr-xr-x  2 root   root        4096 Aug  2 18:54 india/        --- group owner have permission r-x 
+
+
+yadi main normal user bis ko group-owner ka member bana doo 
+
+root@kali:/tmp/india#  gpasswd -a bis root
+Adding user bis to group root
+
+for a normal user bis activity
+-----------------------------------------------
+bis@kali:~$ cd /tmp/india/
+bis@kali:/tmp/india$ ls
+india
+bis@kali:/tmp/india$ ls india/
+group  gshadow  passwd  shadow
+bis@kali:/tmp/india$ cd india/
+bis@kali:/tmp/india/india$ touch filename
+touch: cannot touch 'filename': Permission denied
+
+
+
+Now I have change permission in group
+-------------------------------------------------
+root@kali:/tmp/india# chmod g=rwx india/
+
+root@kali:/tmp/india# ll 
+total 12
+drwxrwx---  2 root root 4096 Aug  2 18:56 india/
+
+now bis user is able to create file also
+bis@kali:/tmp/india/india$ touch filename
+bis@kali:/tmp/india/india$ 
+
+
+
+humne group-owner ke sari permission chhin le
+root@kali:/tmp/india# chmod g=--- india/
+
+root@kali:/tmp/india# ll 
+total 12
+drwx------  2 root root 4096 Aug  2 19:16 india/
+
+check at bis user sides--
+bis@kali:/tmp/india$ cd india/
+-bash: cd: india/: Permission denied
+bis@kali:/tmp/india$ ls india/
+ls: cannot open directory 'india/': Permission denied
+bis@kali:/tmp/india$ 
+
+
+
+root@kali:/tmp/india# # yadi hum folder india ko ownership de de to wo sab kr lega
+
+root@kali:/tmp/india# ll
+total 12
+drwx------  2 root root 4096 Aug  2 19:16 india/
+
+root@kali:/tmp/india# chown bis india/
+root@kali:/tmp/india# ll
+total 12
+drwx------  2 bis  root 4096 Aug  2 19:16 india/           now owner is bis, bis will do all thing
+
+
+root@kali:/tmp/india# # yadi main ownership ka hi permission chiin le toh
+root@kali:/tmp/india# chmod u=--- india/
+root@kali:/tmp/india# ll
+total 12
+
+d---------  2 bis  root 4096 Aug  2 19:16 india/
+
+as a bis user
+
+bis@kali:/tmp/india$ cd india/
+-bash: cd: india/: Permission denied
+bis@kali:/tmp/india$ ll india/
+ls: cannot open directory 'india/': Permission denied
+bis@kali:/tmp/india$ 
+
+
+how to give permission to all owner group and other
+root@kali:/tmp/india# chmod ugo=rwx india/
+root@kali:/tmp/india# ll
+total 12
+drwxrwxrwx  2 bis  root 4096 Aug  2 19:16 india/
+
+
+
+-------------------------------------------------- umask ----------------------------------------------------------
+
+max permmision for directory
+777
+
+max permission for file
+666           ----------- 1 is used for execution leave it
+
+for root umask default value is 
+root@kali:~# umask 
+0022
+root@kali:~# 
+
+
+for normal user umask value is 
+bis@kali:~$ umask 
+0002
+bis@kali:~$ 
+
+what is mean by 0 here in begining 
+0 means directory or file , in linux all thing is file
+022   or 002    is umask value 
+
+
+------------------------
+suppose I have created a directory 
+root@kali:~# mkdir india
+
+how to check directory permission 
+root@kali:~# ls -ld india/
+drwxr-xr-x 2 root root 4096 Aug  2 20:53 india/
+
+
+
+----------------------------------------------------------
+
+root@kali:~# grep -n "^UMASK" /etc/login.defs
+151:UMASK               022
+
+
+
+
+
+
+
+
+root@kali:~# cat script_umask.sh 
+#!/bin/bash
+echo "=== Starting Shell: $0 ==="
+echo "Shell PID: $$"
+echo "Shell type: $0"
+echo "Current umask: $(umask)"
+echo "---------------------------------"
+
+check_and_source() {
+    local file="$1"
+    if [ -f "$file" ]; then
+        echo "[FOUND] $file"
+        echo "---- File content with umask lines ----"
+        grep -n "umask" "$file" || echo "(No umask in this file)"
+        echo "---------------------------------------"
+    else
+        echo "[MISSING] $file"
+    fi
+}
+
+# Check common startup files
+check_and_source /etc/profile
+check_and_source ~/.bash_profile
+check_and_source ~/.bash_login
+check_and_source ~/.profile
+check_and_source ~/.bashrc
+
+echo "=== End of check ==="
+
+
+
+
+
+before editing in .bashrc it shows output below 
+
+root@kali:~# bash --login ~/script_umask.sh
+=== Starting Shell: /root/script_umask.sh ===
+Shell PID: 55149
+Shell type: /root/script_umask.sh
+Current umask: 0022
+---------------------------------
+[FOUND] /etc/profile
+---- File content with umask lines ----
+(No umask in this file)
+---------------------------------------
+[MISSING] /root/.bash_profile
+[MISSING] /root/.bash_login
+[FOUND] /root/.profile
+---- File content with umask lines ----
+(No umask in this file)
+---------------------------------------
+[FOUND] /root/.bashrc
+---- File content with umask lines ----
+(No umask in this file)
+---------------------------------------
+=== End of check ===
+
+
+Why /etc/login.defs Wins Here
+PAM modules (like pam_umask.so) apply the value before Bash reads /etc/profile or your .bashrc.
+
+Your .bashrc doesn’t have a umask line, so it never overrides it.
+
+
+
+
+
+
+
+umask value normal user bhi change kr sakta hai 
+bis@kali:~$ vim .bashrc    -------------- he can write his umask value according to him
+
+
+can it possible umask will same for every user even root also 
+
+root@kali:~# vim /etc/bash.bashrc     for ubuntu
+root@kali:~# vim /etc/bashrc          for other 
+
+
+harry@kali:~$ umask
+0777
+
+
+bis@kali:~$ umask
+0000
+
+why here umask is 000 because he is reading self .bashrc , even you set in /etc/bashrc 
+
+Note: all user always read his .bashrc , even you have set /etc/bashrc , if you remove user umask in .bashrc then it read /etc/basrc.
+
+even root user 
+root@kali:~# umask
+0000
+root@kali:~# sed -i '/umask/d' ~/.bashrc
+root@kali:~# bash
+root@kali:~# umask
+0777
+
+
+normal user 
+
+bis@kali:~$ umask
+0000
+bis@kali:~$ sed -i '/umask/d' ~/.bashrc
+bis@kali:~$ bash
+bis@kali:~$ umask
+0777
+
+------------------------------------------------ Better way you can set ----------------------------------------------------------
+
+umask -S u=rwx,g=r,o=r
+you can also set in 
+vim /etc/bashrc
+
+bis@kali:~$ umask
+0033
+
+root@kali:~# umask
+0033
+
+no need to worry according method
+
+
+
+ 
+
+
+
+
+
