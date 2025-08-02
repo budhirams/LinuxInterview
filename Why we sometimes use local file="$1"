@@ -1,0 +1,64 @@
+Example
+
+#!/bin/bash
+
+var="global"
+
+my_func() {
+    local var="local"   # try removing 'local' to see the difference
+    echo "Inside function: $var"
+}
+
+my_func
+echo "Outside function: $var"
+
+
+With local:
+
+Inside function: local
+Outside function: global
+
+Without local:
+Inside function: local
+Outside function: local
+
+→ Notice how without local, the function overwrote the global variable.
+
+✅ Rule of thumb:
+
+If the variable is only used inside a function → use local.
+
+
+
+
+
+confusion occurs using below script , solution is above:
+------------------------------------------------------------------------------root@kali:~# cat script_umask.sh 
+#!/bin/bash
+echo "=== Starting Shell: $0 ==="
+echo "Shell PID: $$"
+echo "Shell type: $0"
+echo "Current umask: $(umask)"
+echo "---------------------------------"
+
+check_and_source() {
+    local file="$1"
+    if [ -f "$file" ]; then
+        echo "[FOUND] $file"
+        echo "---- File content with umask lines ----"
+        grep -n "umask" "$file" || echo "(No umask in this file)"
+        echo "---------------------------------------"
+    else
+        echo "[MISSING] $file"
+    fi
+}
+
+# Check common startup files
+check_and_source /etc/profile
+check_and_source ~/.bash_profile
+check_and_source ~/.bash_login
+check_and_source ~/.profile
+check_and_source ~/.bashrc
+
+echo "=== End of check ==="
+If the variable needs to be shared across the whole script → don’t use local.
