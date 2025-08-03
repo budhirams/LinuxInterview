@@ -1,0 +1,139 @@
+# grep Command and Regular Expressions Guide
+
+## Basic usage of grep:
+--------------------------
+Searching stdin:
+  [command with stdout] | grep -F [pattern]
+Searching a file:
+  grep -F [pattern] [file]
+
+### What are the parameters?
+  -F  Disable regular expressions
+
+### Best practice:
+Pattern in single quotes, we want to disable shell expansions here!
+
+`-F` means disable regular expressions (Fixed string search)  
+Example:
+```bash
+grep -F 'ROMEO' shakespeare.txt
+```
+
+Example with IP addresses:
+```bash
+ip addr show | grep -F 'inet '
+```
+Output:
+```
+inet 127.0.0.1/8 scope host lo
+inet 192.168.150.132/24 brd 192.168.150.255 scope global dynamic noprefixroute ens33
+inet 172.18.0.1/16 brd 172.18.255.255 scope global br-7e4d546a6703
+inet 172.19.0.1/16 brd 172.19.255.255 scope global br-94892351e404
+inet 172.17.0.1/16 brd 172.17.255.255 scope global docker0
+```
+
+---
+
+## Important grep Options
+
+`grep -i [pattern]`  
+Case-insensitive search
+
+`grep -n [pattern]`  
+Prints the line numbers before each line
+
+`grep -o [pattern]`  
+Prints only the matching part of each line, one per line
+
+`grep -c [pattern]`  
+Counts the number of lines in which a pattern occurs
+
+Example:
+```bash
+grep -ci 'romeo' shakespeare.txt
+```
+
+---
+
+## Examples
+
+```bash
+grep -Fn 'Olivier' passwd
+# Output:
+22:olivier:x:1003:1003:Olivier Dubois:/home/olivier:/bin/bash
+```
+
+Counting system accounts:
+```bash
+grep -Fc '/usr/sbin/nologin' passwd
+# Hint: System accounts are not configured with a shell
+```
+
+---
+
+## Recursive Search
+
+`grep -r [pattern]`  
+Recursive search in current directory and subdirectories.
+
+`grep -l [pattern]`  
+Show only filenames containing matches.
+
+Example:
+```bash
+grep -Firl 'Deployment' /tmp/work/*
+```
+
+---
+
+## Counting Matches Per File
+
+```bash
+grep -Frci 'meeting' /tmp/work/*
+```
+- `-c` counts matches per file
+
+---
+
+## Extracting Specific Fields
+
+Example: How many hours worked on Fridays in January (5th column):
+```bash
+grep -Fr 'Friday' /tmp/work/January/ | cut -d ',' -f 5
+```
+
+---
+
+## Regular Expressions (Regex)
+
+Regular expressions (regex) are patterns used to match text.  
+They allow you to search for complex patterns like:
+- Phone numbers
+- Email addresses
+- Dates
+- Specific word formats
+
+Example email search:
+```bash
+echo "hello world@example.com" | grep -E '[^[:space:]@]+@[^@[:space:]]+'
+```
+
+Example log search:
+```bash
+grep '^Feb' /var/log/messages
+```
+
+Match first 3 characters of each line:
+```bash
+grep '^...' /var/log/messages | head
+```
+
+---
+
+## Quick Regex Tips
+- `^` → start of line
+- `$` → end of line
+- `.` → any character
+- `[]` → character set
+- `+` → one or more
+- `*` → zero or more
