@@ -1,0 +1,202 @@
+cd /var/log
+cups --- check for printer log
+
+rsyslog manages all logs
+------------------------------
+
+authenticatin log by-default is going to /var/log/secure 
+
+you can modify also in /etc/rsyslog.conf
+
+how to check this 
+--------------------------------
+terminal1 :
+
+[root@master log]# vim /etc/rsyslog.conf
+[root@master log]# tail -f /var/log/secure
+Aug  6 22:22:46 localhost sshd[1014]: Server listening on :: port 22.
+Aug  6 22:22:46 localhost systemd[1062]: pam_unix(systemd-user:session): session opened for user gdm(uid=42) by gdm(uid=0)
+Aug  6 22:22:47 localhost gdm-launch-environment][1049]: pam_unix(gdm-launch-environment:session): session opened for user gdm(uid=42) by (uid=0)
+Aug  6 22:22:53 localhost polkitd[828]: Registered Authentication Agent for unix-session:c1 (system bus name :1.25 [/usr/bin/gnome-shell], object path /org/freedesktop/PolicyKit1/AuthenticationAgent, locale en_US.UTF-8)
+Aug  6 22:24:35 localhost unix_chkpwd[2245]: password check failed for user (root)
+Aug  6 22:24:35 localhost sshd[2228]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=192.168.150.1  user=root
+Aug  6 22:24:37 localhost sshd[2228]: Failed password for root from 192.168.150.1 port 50323 ssh2
+Aug  6 22:24:41 localhost sshd[2228]: Accepted password for root from 192.168.150.1 port 50323 ssh2
+Aug  6 22:24:41 localhost systemd[2249]: pam_unix(systemd-user:session): session opened for user root(uid=0) by root(uid=0)
+Aug  6 22:24:41 localhost sshd[2228]: pam_unix(sshd:session): session opened for user root(uid=0) by root(uid=0)
+Aug  6 22:41:50 localhost sshd[2471]: Accepted password for root from 192.168.150.1 port 51193 ssh2
+Aug  6 22:41:50 localhost sshd[2471]: pam_unix(sshd:session): session opened for user root(uid=0) by root(uid=0)
+Aug  6 22:42:07 localhost sshd[2475]: Received disconnect from 192.168.150.1 port 51193:11: disconnected by user
+Aug  6 22:42:07 localhost sshd[2475]: Disconnected from user root 192.168.150.1 port 51193
+Aug  6 22:42:07 localhost sshd[2471]: pam_unix(sshd:session): session closed for user root
+
+
+
+you can also change logpath
+---------------------------------------------------
+
+vim /etc/rsyslog.conf 
+# The authpriv file has restricted access.
+authpriv.*                                              /var/log/cloudknowledge         --------- suppose I want log at this path.
+
+So when you ,going performed activity , login and logout , it generate log name cloudknowledge and stored the logs
+
+Now take access ip and logout
+-------------------------------
+ssh root@192.168.150.129
+[root@master ~]# ll /var/log/cloudknowledge
+-rw-------. 1 root root 493 Aug  6 23:10 /var/log/cloudknowledge
+[root@master ~]# cat /var/log/cloudknowledge
+Aug  6 23:10:12 master sshd[2604]: Accepted password for root from 192.168.150.1 port 55922 ssh2
+Aug  6 23:10:12 master sshd[2604]: pam_unix(sshd:session): session opened for user root(uid=0) by root(uid=0)
+Aug  6 23:10:15 master sshd[2608]: Received disconnect from 192.168.150.1 port 55922:11: disconnected by user
+Aug  6 23:10:15 master sshd[2608]: Disconnected from user root 192.168.150.1 port 55922
+Aug  6 23:10:15 master sshd[2604]: pam_unix(sshd:session): session closed for user root
+
+
+
+How to centralised logs : means stored logs all the server in a centralise cerver:
+------------------------------------------------------------------------------------
+
+you can fetch out log , tcp based and udp based 
+tcp based is secure
+
+vim /etc/rsyslog.conf 
+
+# uncomment both the line
+module(load="imtcp") # needs to be done just once
+input(type="imtcp" port="514")
+
+now allow 514 port in firewall
+
+[root@master ~]# firewall-cmd --permanent --add-port=514/tcp
+success
+[root@master ~]# firewall-cmd --reload
+success
+[root@master ~]# systemctl restart rsyslog.service
+
+
+--------------------------------------------- now go to client server ---------------------------------------
+# send all the log to central server
+*.*     @@192.168.150.129:514
+
+
+
+
+[root@client ~]# tail -1 /etc/rsyslog.conf             ------------ verify it edited or not ?
+*.*     @@192.168.150.129:514
+
+systemctl restart rsyslog.service
+
+
+now you can activity on client server and it log will store on centralise server
+suppose you logged out it generate some messages or login it generate some messages
+
+see on master server
+-----------------------
+
+[root@master ~]# > /var/log/cloudknowledge
+[root@master ~]# tail -f /var/log/cloudknowledge
+Aug  7 00:33:51 client sshd[2403]: Received disconnect from 192.168.150.1 port 55932:11: disconnected by user
+Aug  7 00:33:51 client sshd[2403]: Disconnected from user root 192.168.150.1 port 55932
+Aug  7 00:33:51 client sshd[2382]: pam_unix(sshd:session): session closed for user root
+Aug  7 00:34:10 client sshd[2623]: Accepted password for root from 192.168.150.1 port 56212 ssh2
+Aug  7 00:34:10 client systemd[2628]: pam_unix(systemd-user:session): session opened for user root(uid=0) by root(uid=0)
+Aug  7 00:34:11 client sshd[2623]: pam_unix(sshd:session): session opened for user root(uid=0) by root(uid=0)
+
+
+
+
+
+
+
+
+---------------------------------------- log rotate ---------------------------------------------------
+
+Thease all are already performing on logrotate basis
+[root@master ~]# cd /etc/logrotate.d/
+[root@master logrotate.d]# ll
+total 52
+-rw-r--r--. 1 root root  91 Apr  1  2021 bootlog
+-rw-r--r--. 1 root root 130 Oct 14  2019 btmp
+-rw-r--r--. 1 root root 160 Oct  8  2024 chrony
+-rw-r--r--. 1 root root  88 Sep  9  2022 dnf
+-rw-r--r--. 1 root root  93 Nov  7  2024 firewalld
+-rw-r--r--. 1 root root 172 Oct 25  2023 iscsiuiolog
+-rw-r--r--. 1 root root 162 Dec 31  2024 kvm_stat
+-rw-r--r--. 1 root root 312 Nov  1  2021 psacct
+-rw-r--r--. 1 root root 226 Dec 17  2024 rsyslog
+-rw-r--r--. 1 root root 155 Nov 26  2024 samba
+-rw-r--r--. 1 root root 289 Dec  6  2024 sssd
+-rw-r--r--. 1 root root 100 Feb 22  2024 wpa_supplicant
+-rw-r--r--. 1 root root 145 Oct 14  2019 wtmp
+
+[root@master logrotate.d]# cat btmp
+# no packages own btmp -- we'll rotate it here
+/var/log/btmp {
+    missingok
+    monthly
+    create 0660 root utmp
+    rotate 1
+}
+
+
+
+suppose main log rotate lagana chahta hun secure pe  
+-----------------------------------------------
+/var/log/secure {
+
+copytruncate  -- secure me se hi copy krke ek alag file banaye
+rotate 30     -- means 30 file ye rakhega baki delete krta jayega 
+daily         -- rotate krna hai toh kis basis pe krna hai 
+compress      -- jo file create hongi kya use compress krke rakhna hai 
+dateext       -- haan bhai date ext bhi dikha do 
+dateformat -%d-%m-%Y  -- dateext ka format kya hona chahiye 
+missingok     -- If secure does not exist, the rotation still continues without errors.
+                 Without missingok, logrotate will throw an error and may stop processing other files.
+notifempty    -- if secure name ki file empty hai toh dont rotate, eska kuchh matlab hi nhin nikalega
+
+
+
+------------------ abhi toh ek din ka wait krna padega toh file create hoga --------------
+--- or ---
+you can manually rotate
+
+
+How to do this 
+-----------------------------
+
+[root@master ~]# cd /etc/logrotate.d/
+[root@master logrotate.d]# vim cloudknowledge
+[root@master logrotate.d]# cat cloudknowledge
+/var/log/secure {
+copytruncate
+rotate 30
+daily
+compress
+dateext
+dateformat -%d-%m-%Y
+missingok
+notifempty
+}
+
+[root@master logrotate.d]# logrotate -f /etc/logrotate.d/cloudknowledge           ------------------ manually rotate
+
+
+------------------------- check in /var/log/ -----------------------------
+[root@master logrotate.d]# cd /var/log/
+[root@master log]# ll secure*
+-rw-------. 1 root root    0 Aug  7 01:07 secure
+-rw-------. 1 root root 1296 Aug  6 22:42 secure-07-08-2025.gz
+[root@master log]# du -sh secure-07-08-2025.gz
+4.0K    secure-07-08-2025.gz
+[root@master log]#
+
+
+
+--------------- see it is empty now , if we run mannualy it will not rotate because it is empty -------------------------------
+[root@master log]# cat secure
+[root@master log]#
+
+
+suppose hum kuchh log dal ke try krten hai 
