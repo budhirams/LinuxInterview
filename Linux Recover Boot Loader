@@ -1,0 +1,84 @@
+Linux Recover Boot Loader
+------------------------------
+BIOS [ basic input output system ] - motherboard se jitne bhi component connected hai , usme power proper mil pa rha hai ya nhi mil pa rha hai, saren component ko proper power mil pa rha hai toh , next process me jata hai 
+
+Boot Loder : operating system ko RAM me load krna hota hai , tabhi jakar aapka Operating System ON hota hai ,
+linux me jo boot loader hai wo grub hai 
+
+GRUB    ------- abhi present me jo version chal rha hai wo GRUB2 hai 
+
+GRUB ek progrm hai jisme ye mentioned hai kaise load krna hai operating system ko.
+
+
+
+Check for EFI firmware directory
+
+ls /sys/firmware/efi
+
+- If the directory exists and lists files → UEFI system.
+- If you get No such file or directory → Legacy BIOS system.
+
+cd /boot/grub2
+rm -rf grub.cfg
+reboot
+
+Now error will show on terminal
+-----------------------------------
+
+grub>
+
+
+Now my challange is , to recover this
+
+so jo bhi image isme load thi usko lena hai , ya pendrive me ho ya dvd me ho
+select your server
+   go to setting
+      select CD/DVD
+          brouse your image 
+             Device staus
+             mark connected
+             mark connected at power on
+                       OK
+now power off this machine
+
+now select server
+   right click
+       Power
+          Power on to Firmware
+               go to Boot
+                   CD-ROM Drive ko top pe lana hai ------shift + sighn
+                            Exit
+                               Exit saving changes
+Now it boot using CD/DVD
+  select Troubleshooting
+      Rescue a Centos Linux system
+
+1) continue
+
+Please make a selection from the above: 1
+enter  ------------ you get a chell
+chroot /mnt/sysimage
+grub2-mkconfig -o /boot/grub2/grub.cfg          ---------- grub2 ke andar grub.cfg file currupt hua hai toh usko recover krna hai 
+exit
+exit
+
+
+cd/dvd se hi boot kr jaega , means esko change krna padega 
+right click on server
+    Power off it
+right click on server 
+    power
+       power on firmware
+            boot
+              Hard drive on top pe hona chahiye  ----------- shift +
+                   exit saving changes
+                        yes
+                        
+       
+
+
+      
+
+
+
+
