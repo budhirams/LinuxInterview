@@ -1,0 +1,121 @@
+# -------------------------------------------------
+# SFTP Configuration Steps
+# -------------------------------------------------
+
+# 1. Check SSH Service Status
+systemctl status openssh-server
+systemctl status openssh
+
+# -------------------------------------------------
+# 2. Create SFTP Directory Structure
+mkdir -p /var/sftp/data
+
+# -------------------------------------------------
+# 3. Create Group and User for SFTP
+groupadd sftpuser
+useradd -d /var/sftp/data/sftp-user1 -s /sbin/nologin -g sftpuser sftp-user1
+passwd sftp-user1
+
+# -------------------------------------------------
+# 4. Verify Directory Structure
+cd /var/sftp/
+ls
+cd data/
+ls
+cd ../
+ll
+
+# -------------------------------------------------
+# 5. Set Proper Ownership and Permissions
+chown -R root:root data
+ll
+chmod 700 data
+ll
+
+# Go inside data directory
+cd data/
+ll
+
+# Assign ownership to SFTP user directory
+chown -R root:sftpuser sftp-user1
+ll
+chmod 750 sftp-user1
+ll
+
+# -------------------------------------------------
+# 6. Create Upload Directory for SFTP User
+cd sftp-user1/
+ll
+mkdir upload
+chown sftp-user1:sftpuser upload/
+ll
+chown -R sftp-user1:sftpuser upload/
+chmod 700 upload/
+ll
+
+# -------------------------------------------------
+# 7. Edit SSH Configuration
+cd /etc/ssh/
+ll
+vim sshd_config
+Port 2222
+PasswordAuthentication yes
+
+Match Group sftpuser
+ChrootDirectory %h
+# “When this user logs in via SFTP, restrict (chroot) them inside their home directory.”
+#  Their home directory (%h) = /var/sftp/data/sftp-user1
+ForceCommand internal-sftp
+X11Forwarding no
+
+# If no rule for port 2222, add:
+sudo iptables -A INPUT -p tcp --dport 2222 -j ACCEP
+semanage port -a -t ssh_port_t -p tcp 2222
+sudo firewall-cmd --permanent --add-port=2222/tcp
+sudo firewall-cmd --reload
+
+
+# -------------------------------------------------
+# 10. Add Custom SSH Port (if needed)
+systemctl restart sshd
+systemctl status sshd
+
+
+
+
+
+# -------------------------------------------------
+# 8. Restart SSH Service
+systemctl restart sshd
+systemctl status sshd
+
+
+# on server 
+iptables -L -n | grep 2222
+
+
+
+
+# -------------------------------------------------
+# ✅ Done — SFTP user (sftp-user1) can now connect securely via port 2222
+# Example client command:
+# sftp -oPort=2222 sftp-user1@<server_ip>
+# -----------------------------------------------
+
+root@kali:~# sftp -oPort=2222 sftp-user1@192.168.150.129
+root@kali:~# echo hello > test.txt
+root@kali:~# cat test.txt
+
+sftp> cd upload/
+  
+
+sftp> put test.txt
+Uploading test.txt to /upload/test.txt
+test.txt                                                                                                 100%    6     2.3KB/s   00:00
+
+
+Now you can check at open-ssh server
+/var/sftp/data/sftp-user1/upload
+[root@localhost upload]# ls
+test.txt
+
