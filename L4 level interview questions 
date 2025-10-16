@@ -1,0 +1,116 @@
+Linux L4 Real-time interview questions and answers. Part-1
+
+1. A server becomes unresponsive — what’s your step-by-step approach to troubleshoot?
+Check basic connectivity:
+ping <server_ip>
+ssh <server_ip>
+
+If ping works but SSH fails:
+
+Check CPU/memory:
+top | head -20
+Or, if SSH unresponsive → access via console or IPMI.
+
+Check I/O wait and load:
+iostat -xm 5
+vmstat 5
+uptime
+
+Check for disk full (common cause):
+df -h
+du -sh /* 2>/dev/null | sort -rh | head
+
+Check kernel messages:
+dmesg | tail -50
+
+If system is hung (high load, low I/O):
+
+Find blocking process:
+ps -eo pid,stat,cmd | grep 'D'
+“D” = Uninterruptible sleep (usually I/O wait).
+
+2. How do you identify a process causing high load but not high CPU usage?
+
+That usually indicates I/O wait or blocked processes.
+
+Check:
+vmstat 1 5
+
+Look for high wa (I/O wait) value.
+iotop -ao
+
+Shows which process is performing heavy I/O.
+If it’s a disk issue:
+sar -d 1 5
+or
+iostat -x 1 5
+
+3. How do you debug high memory usage or memory leaks in Linux?
+
+Check memory summary:
+free -m
+
+Find top memory consumers:
+ps aux --sort=-%mem | head
+
+If memory is full but swap is active → possible leak.
+
+For deeper kernel memory leak analysis:
+slabtop
+cat /proc/meminfo
+
+Use smem or pmap <pid> to check per-process memory footprint.
+
+4. How do you handle a situation where /var or /tmp is 100% full?
+Identify large files:
+du -sh /var/* | sort -rh | head
+Common culprits: logs, cores, temp files.
+journalctl --vacuum-time=7d
+rm -rf /tmp/*
+Check for deleted but still-open files:
+lsof | grep deleted
+Truncate large logs safely:
+: > /var/log/filename.log
+
+Prevent recurrence — add logrotate or move /var to a separate partition.
+
+5. What is the difference between a zombie and an orphan process?
+
+Type	Description	Resolution
+Zombie	Process completed execution but still has an entry in the process table (parent hasn’t read exit status).	Kill or restart parent process.
+Orphan	Parent process terminated, leaving the child running (gets re-parented to init or systemd).	Usually harmless, systemd adopts it.
+Check for zombies:
+ps -eo pid,ppid,stat,cmd | grep Z
+
+6. How do you trace which process deleted or modified a file?
+auditctl -w /path/to/file -p war -k filewatch
+ausearch -k filewatch
+Or with inotify:
+inotifywait -m /path/to/dir
+
+For real-time event auditing, L4s often integrate with SELinux/Auditd rules.
+
+7. How do you analyze system performance using sar or sysstat?
+sar helps analyze historic CPU, memory, and I/O metrics.
+
+sar -u 5 5     # CPU usage
+sar -r 5 5     # Memory usage
+sar -d 5 5     # Disk I/O
+sar -n DEV 5 5   # Network
+
+8. Explain how you’d troubleshoot a slow NFS mount.
+Check network latency:
+ping nfs-server
+traceroute nfs-server
+Check NFS mount options:
+mount | grep nfs
+Ensure using noatime, hard, tcp, rsize/wsize=65536.
+
+Test read/write:
+
+dd if=/dev/zero of=/mnt/test bs=1M count=100 oflag=direct
+
+Check NFS stats:
+
+nfsstat -s -c
+If slow, analyze server-side logs: /var/log/messages
