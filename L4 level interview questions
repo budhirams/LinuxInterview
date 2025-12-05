@@ -1,3 +1,4 @@
+
 Linux L4 Real-time interview questions and answers. Part-1
 
 1. A server becomes unresponsive — what’s your step-by-step approach to troubleshoot?
@@ -70,17 +71,42 @@ rm -rf /tmp/*
 Check for deleted but still-open files:
 lsof | grep deleted
 Truncate large logs safely:
-: > /var/log/filename.log
+ > /var/log/filename.log
 
 Prevent recurrence — add logrotate or move /var to a separate partition.
 
 5. What is the difference between a zombie and an orphan process?
+Zombie Process क्या होता है?
+✔ Zombie Process = Process ने अपना काम पूरा कर लिया, Exit भी कर गया… लेकिन फिर भी Process Table में 
+उसका entry बचा हुआ है।
+ऐसा क्यों होता है?
+Child process खत्म होकर exit status (return code) parent को भेजता है।
+Parent को यह status wait() / waitpid() से पढ़ना चाहिए।
+अगर parent ने status नहीं पढ़ा → child मर चुका है लेकिन उसकी entry “अटकी” रहती है → वह Zombie बन जाता है।
+📌 Zombie की खास बात
+Zombie run नहीं करता, CPU use नहीं करता
+सिर्फ process table में जगह घेरता है
+📌 Zombie को हटाने का तरीका
+आप zombie को kill नहीं कर सकते (क्योंकि वह already dead है)
+केवल parent process को kill या restart करने से zombie हटता है
+(फिर systemd उसे साफ़ कर देता है)
+✅ 2️⃣ Detailed output से parent पता करें
+ps -eo pid,ppid,state,cmd | grep Z
+ps -eo pid,ppid,state,cmd | grep Z
+आपको ऐसा दिखाई देगा:
+4521  4500  Z     [mychild] <defunct>
+यही parent है → PID 4500
+⚙️ Parent को kill/restart कैसे करें?
+अगर आप parent को kill करना चाहें:
+kill -9 <PPID>
+या gracefully:
+kill -15 <PPID>
 
-Type	Description	Resolution
-Zombie	Process completed execution but still has an entry in the process table (parent hasn’t read exit status).	Kill or restart parent process.
-Orphan	Parent process terminated, leaving the child running (gets re-parented to init or systemd).	Usually harmless, systemd adopts it.
-Check for zombies:
-ps -eo pid,ppid,stat,cmd | grep Z
+
+ ✔ Orphan Process = Parent process मर गया, लेकिन child process 
+ अभी भी चल रहा है। जब ऐसा होता है तो Linux में: 👉 Child process को systemd (PID 1) 
+ अपना parent बना लेता है इसे कहते हैं re-parenting। इसलिए orphan process dangerous नहीं होते। systemd ऐसे 
+processes को efficiently manage करता है।
 
 6. How do you trace which process deleted or modified a file?
 auditctl -w /path/to/file -p war -k filewatch
