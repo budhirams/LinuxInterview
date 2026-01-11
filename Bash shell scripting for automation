@@ -1,5 +1,30 @@
 [[ -f file ]]  ---> To validate file or path is a file or not
 
+[bis@client ~]$ [[ -r /etc/shadow ]] && cat /etc/shadow || echo "not readable"
+not readable
+[bis@client ~]$
+[bis@client ~]$
+[bis@client ~]$ [[ -r /etc/passwd ]] && cat /etc/passwd || echo "not readable"
+root:x:0:0:root:/root:/bin/bash
+bin:x:1:1:bin:/bin:/sbin/nologin
+daemon:x:2:2:daemon:/sbin:/sbin/nologin
+
+🔹 [[ -r /etc/hosts ]]
+matlab
+kya file exist karti hai
+aur kya read permission hai
+
+🔹 &&
+Agar condition true ho
+cat /etc/hosts
+File ka content print karega
+
+🔹 ||
+Agar condition false ho
+echo "You don't have read permission"
+Message print karega
+
+
 [[ -d file ]]  ---> To validate file or path is a directory or not
 
 [[ -e file ]]  ---> To validate file exist or not
@@ -34,9 +59,10 @@ fileName=/etc/host
 
 
 #!/usr/bin/bash
-fileName=/etc/host
-
+fileName=/etc/hosts
 [[ -r ${fileName} ]] && cat ${fileName} || echo "You Dont have read permission"
+
+
 bis@kali:~/shellScripting$ ./practice1.sh 
 kali
 
@@ -44,6 +70,7 @@ kali
 
 I want to store this value in ${1}
 
+vim practice1.sh
 #!/usr/bin/bash
 fileName=${1}
 
