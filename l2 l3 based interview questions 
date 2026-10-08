@@ -1,0 +1,110 @@
+View profile for Archana Chaudhary, Archana Chaudhary is open to work
+Archana Chaudhary  2nd
+Specialist @ HCLTech | Redhat Certified RHCSA and RHCE
+
+1w
+ Follow
+
+Post 2 - Linux L2/L3 Interview Questions — Answers & Explanations
+
+Q4. You are unable to unmount a filesystem. What could be the possible reasons?
+The most common error is:
+device is busy
+Possible reasons
+1. A process has an open file
+Check:
+lsof +D /mountpoint
+or:
+fuser -vm /mountpoint
+2. A user’s current directory is inside the filesystem
+For example:
+cd /data
+umount /data
+The shell itself may be using /data.
+Move out:
+cd /
+Then:
+umount /data
+3. A process is executing something from that filesystem
+For example:
+/data/application/app
+is currently running.
+4. Nested mount exists
+Check:
+findmnt /data
+or:
+mount | grep /data
+5. NFS filesystem is stale/unresponsive
+NFS can remain busy if the server is unavailable.
+6. Swap file is located there
+A filesystem containing an active swap file cannot simply be unmounted.
+Useful troubleshooting
+fuser -vm /data
+lsof +D /data
+findmnt /data
+Linux cannot unmount a filesystem while it is busy, such as when processes have open files or working directories there. 
+Last resort
+umount -l /data
+This is a lazy unmount. Don’t use it blindly on production systems. 
+Q5. What could be the reason if a server takes a long time to come up after a reboot?
+There can be many reasons.
+Common causes
+1. Incorrect /etc/fstab entry
+2. Missing disk/device
+3. NFS mount unavailable
+4. DNS/network problems
+5. Filesystem check (fsck) taking a long time
+6. A systemd service hanging
+7. Hardware/RAID/storage problems
+8. Network interface timeout
+9. Bootloader/initramfs issue
+10. Dependency/service timeout
+Troubleshooting commands
+Check systemd boot time:
+systemd-analyze
+Check slow services:
+systemd-analyze blame
+Check dependency chain:
+systemd-analyze critical-chain
+Check previous boot logs:
+journalctl -b -1
+Check kernel messages:
+dmesg
+Check mounts:
+findmnt
+Check /etc/fstab:
+cat /etc/fstab
+scenario
+If the server takes exactly 90 seconds during boot, I would especially investigate a missing/unreachable device or network mount because systemd may be waiting for a timeout.
+
+Q6. You are unable to create new files in a partition even though there is enough disk space and you have the required permissions. What could be the possible reasons?
+
+The first thing I would check is inode availability.
+1. Inodes exhausted
+Run:
+df -i
+You might see:
+Filesystem      Inodes  IUsed  IFree IUse%
+/dev/sdb1       1000000 1000000 0    100%
+Even if:
+df -h
+shows plenty of free GB, you cannot create files because there are no free inodes. 
+2. Filesystem mounted read-only
+Check:
+mount | grep /mountpoint
+or:
+findmnt /mountpoint
+Look for:
+ro
+Try:
+touch /mountpoint/test
+You may get:
+Read-only file system 3. Disk quota exceeded
+Check:
+quota -u username
+or filesystem-specific quota tools. 4. Filesystem-specific limits
+Certain filesystem structures can become exhausted even when apparent disk space remains.
+5. Reserved blocks
+On ext filesystems, some blocks may be reserved for privileged/system use.
+Check:
+tune2fs -l /dev/sdb1 | grep -i reserved
